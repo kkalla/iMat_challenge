@@ -9,7 +9,8 @@ from data_utils import Data_loader
 
 def test_data_loader():
     data_loader = Data_loader()
-    data_loader.load_datasets(data_dir='../data/')
+    train,test,valid,sample = data_loader.load_datasets(data_dir='../data')
+    print(train.keys())
     
 def main():
     test_data_loader()
