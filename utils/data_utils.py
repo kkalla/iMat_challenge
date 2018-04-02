@@ -18,6 +18,7 @@ class Data_loader():
         'train_json':'https://www.kaggle.com/c/8220/download/train.json',
         'test_json':'https://www.kaggle.com/c/8220/download/test.json',
         'valid_json':'https://www.kaggle.com/c/8220/download/validation.json'}
+            
     
     def load_datasets(self,data_dir='data',which_set='all'):
         
@@ -40,8 +41,9 @@ class Data_loader():
         if which_set == 'test':
             return test_set
         if which_set == 'valid':
-            return valid_set
+            return valid_set    
             
+        
     def _download_files(self,save_dir,file_name):
         print(file_name + " is downloaded now...")
         subprocess.run(['kaggle','competitions','download','-c',
