@@ -5,7 +5,7 @@ Created on Mon Apr  2 21:37:16 2018
 @author: kkalla
 """
 
-import os, multiprocessing
+import os, multiprocessing,sys
 import urllib.request
 
 from PIL import Image
@@ -15,7 +15,7 @@ from tqdm import tqdm
 from data_utils import Data_loader
 
 
-def download_images(id_url_list,save_dir):
+def download_images(id_url_list):
     """
     Download images in id_url_list and save it to save_dir
     
@@ -26,6 +26,9 @@ def download_images(id_url_list,save_dir):
     
     """
     
+    save_dir = sys.argv[1]
+    if not os.path.exists(save_dir):
+        os.mkdir(save_dir)
     (image_id, url) = id_url_list
     file_name = os.path.join(save_dir,"{}.jpg".format(image_id))
     
@@ -34,7 +37,7 @@ def download_images(id_url_list,save_dir):
         return
     
     try:
-        response = urllib.request.urlopen(url)
+        response = urllib.request.urlopen(url,timeout=3000)
         image_data = response.read()
     except:
         print('Can not download image #'+image_id+' from '+url)
@@ -80,10 +83,10 @@ def get_id_url_list(which_set):
     
 def main():
     train_list = get_id_url_list('train')
-    pool = multiprocessing.Pool(processes=3)
+    pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
     with tqdm(total=len(train_list)) as t:
         for _ in pool.imap_unordered(
-                download_images(train_list,save_dir='../data/train_images')):
+                download_images,train_list):
             t.update(1)
     
     
