@@ -9,7 +9,7 @@ Building blocks for Convolutional Nueral Networks w/o TensorFlow
 
 import numpy as np
 
-def Conv():
+class Conv:
     """Simple Convolutional Layer.
     
     Arguments:
@@ -24,10 +24,9 @@ def Conv():
                 on 0 with stddev is sqrt(2/(input_dim + output_dim))
     
     """
-    def __init__(self,num_input_channels, filter_size = 3, padding, stride=2, num_filters,
-                 initializer):
-        
-        self.num_input_channels = num_input_channels
+    def __init__(
+            self,num_input_channels, num_filters, filter_size = 3, padding='same',
+            stride=2,initializer='xavier_normal'):
         
         #Initializing weights
         if initializer == 'xavier_normal':
@@ -59,7 +58,6 @@ def Conv():
                 output_width = (input_width+2*padding-filter_width)/2 + 1.
         """
         batch_size,in_h,in_w,num_in_channels = input_X.shape
-        out_h, out_w = _get_out_shape(self.filter_size,self.padding,in_h,in_w)
         
         # Calculate padding 
         if self.padding == 'same':
@@ -67,7 +65,9 @@ def Conv():
         else:
             pad = 0
         
-        X_padded = np.pad(input_X,((0,0),(pad,pad),(pad,pad)(0,0)),'constant')
+        out_h, out_w = _get_out_shape(self.filter_size,pad,in_h,in_w)
+        
+        X_padded = np.pad(input_X,((0,0),(pad,pad),(pad,pad),(0,0)),'constant')
         # Zero initialization of output
         output_Z = np.zeros((batch_size,out_h,out_w,self.num_filters))
         
@@ -75,7 +75,7 @@ def Conv():
             a_prev_pad = X_padded[i,:,:,:]
             for h in range(out_h):
                 for w in range(out_w):
-                    for c in range(num_filters):
+                    for c in range(self.num_filters):
                         #Find the corners of the current "slice"
                         vert_start = h*self.stride
                         vert_end = vert_start + self.filter_size
@@ -85,9 +85,12 @@ def Conv():
                         #Define slice
                         a_slice_prev = \
                         a_prev_pad[vert_start:vert_end,horiz_start:horiz_end,:]
+                        
                         #Conv single step
-                        output_Z[i,h,w,c] = self.conv_one_step(
-                                a_slice_prev,self.W[c,:,:,:],self.b[c,:,:,:])
+                        output_Z[i,h,w,c] = \
+                        self.conv_one_step(a_slice_prev,
+                                           self.W[c,:,:,:],
+                                           self.b[c,:,:,:])
                         
         assert(output_Z.shape == (batch_size,out_h,out_w,self.num_filters))
         
@@ -99,7 +102,7 @@ def Conv():
         return output_Z, cache
                         
         
-    def conv_one_step(a_slice_prev, W, b):
+    def conv_one_step(self,a_slice_prev, W, b):
         """
         Arguments:
             a_slice_prev: (f,f, num_channels)
