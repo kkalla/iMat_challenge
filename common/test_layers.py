@@ -15,11 +15,10 @@ def main():
             num_filters=3,initializer='xavier_normal')
     
     pool = layers.Pool(2,1)
-    output_Z,cache = conv.forward(input_X)
+    output_Z = conv.forward(input_X)
     output_A = pool.forward(input_X)
     print("### test convolutional layer ###")
     print("input_X = " ,input_X)
-    print("W = ",cache[1])
     print("output_Z = " ,output_Z)
     print("### test pooling layer ###")
     print("output_A = ", output_A)      

@@ -93,12 +93,56 @@ class Conv:
         assert(output_Z.shape == (batch_size,out_h,out_w,self.num_filters))
         
         #Save information for backpropagation
-        hparameters = {'pad': pad,
-                       'stride': self.stride}
-        cache = (input_X, self.W, self.b, hparameters)
+        self.A_prev = input_X
         
-        return output_Z, cache
+        
+        return output_Z
+    
+    def backward(self,dZ):
+        """backward propagation for a convolutional layer
+        
+        Arguments:
+            dZ: numpy array of shape (batch_size, n_H, n_W, n_C)
+        """
+        batch_size, n_H_prev, n_W_prev, n_C_prev = self.A_prev.shape
+        n_C,f_size,f_size,_ = self.W.shape
+        
+        _,n_H,n_W,n_C = dZ.shape
+        
+        #Initialize dA_prev, dW, db
+        dA_prev = np.zeros_like(self.A_prev)
+        dW = np.zeros_like(self.W)
+        db = np.zeros_like(self.b)
+        
+        if self.padding == 'same':
+            pad = (self.filter_size - 1)/2
+        else:
+            pad = 0
+        
+        A_prev_pad = np.pad(self.A_prev,((0,0),(pad,pad),(pad,pad),(0,0)),'constant')
+        dA_prev_pad = np.pad(dA_prev,((0,0),(pad,pad),(pad,pad),(0,0)),'constant')
+        
+        for i in range(batch_size):
+            a_prev_pad = A_prev_pad[i,:,:,:]
+            da_prev_pad = dA_prev_pad[i,:,:,:]
+            for h in range(n_H):
+                for w in range(n_W):
+                    for c in range(n_C):
+                        #Find the corners of the current "slice"
+                        vert_start,vert_end,horiz_start,horiz_end = \
+                        _get_corners(h,w,self.filter_size,self.stride)
+                        a_slice = a_prev_pad[vert_start:vert_end,horiz_start:horiz_end,:]
+                        # Update gradients
+                        da_prev_pad[vert_start:vert_end,horiz_start:horiz_end,:] += \
+                        self.W[:,:,:,c] * dZ[i,h,w,c]
+                        dW[:,:,:,c] += a_slice * dZ[i,h,w,c]
+                        db[:,:,:,c] += dZ[i,h,w,c]
+            # Set the ith training example to the unpadded
+            dA_prev[i,:,:,:] = da_prev_pad[pad:-pad,pad:-pad,:]
                         
+        assert(dA_prev.shape==(batch_size,n_H_prev,n_W_prev,n_C_prev))
+        
+        return dA_prev, dW, db
         
     def conv_one_step(self,a_slice_prev, W, b):
         """
@@ -153,11 +197,42 @@ class Pool:
                         elif self.mode == 'average':
                             out_X[i,h,w,c] = np.mean(prev_slice)
         #Store cache                    
-        self.cache = (input_X)
+        self.A_prev = input_X
         
         assert(out_X.shape==(batch_size,out_H,out_W,out_C))
         
         return out_X
+    
+    def backward(self,dA):
+        batch_size, n_H_prev, n_W_prev, n_C_prev = self.A_prev.shape
+        _,n_H,n_W,n_C = dA.shape
+        
+        #Initialize output
+        dA_prev = np.zeros_like(self.A_prev)
+        
+        for i in range(batch_size):
+            a_prev = self.A_prev[i,:,:,:]
+            for h in range(n_H):
+                for w in range(n_W):
+                    for c in range(n_C):
+                        vert_start,vert_end,horiz_start,horiz_end=\
+                        _get_corners(h,w,self.pool_size,self.stride)
+                        
+                        if self.mode == "max":
+                            a_prev_slice = \
+                            a_prev[vert_start:vert_end,horiz_start:horiz_end,c]
+                            mask = (a_prev_slice==np.max(a_prev_slice))
+                            dA_prev[i,vert_start:vert_end,horiz_start:horiz_end,c] += \
+                            dA[i,h,w,c]*mask
+                        elif self.mode == "average":
+                            da = dA[i,h,w,c]
+                            average = da/(self.pool_size*self.pool_size)
+                            dA_prev[i,vert_start:vert_end,horiz_start:horiz_end,c] += \
+                            np.ones((self.pool_size,self.pool_size))*average
+                            
+        assert(dA_prev.shape == self.A_prev.shape)
+        
+        return dA_prev
   
     
 def _get_out_shape(filter_size,padding,stride,in_h,in_w):
