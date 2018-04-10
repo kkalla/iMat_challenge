@@ -65,7 +65,7 @@ class Conv:
         else:
             pad = 0
         
-        out_h, out_w = _get_out_shape(self.filter_size,pad,in_h,in_w)
+        out_h, out_w = _get_out_shape(self.filter_size,pad,self.stride,in_h,in_w)
         
         X_padded = np.pad(input_X,((0,0),(pad,pad),(pad,pad),(0,0)),'constant')
         # Zero initialization of output
@@ -77,10 +77,8 @@ class Conv:
                 for w in range(out_w):
                     for c in range(self.num_filters):
                         #Find the corners of the current "slice"
-                        vert_start = h*self.stride
-                        vert_end = vert_start + self.filter_size
-                        horiz_start = w*self.stride
-                        horiz_end = horiz_start + self.filter_size
+                        vert_start,vert_end,horiz_start,horiz_end = \
+                        _get_corners(h,w,self.filter_size,self.stride)
                         
                         #Define slice
                         a_slice_prev = \
@@ -117,12 +115,66 @@ class Conv:
         
         return Z
                         
+class Pool:
+    """Simple pooling layer
+    
+    Arguments:
+        pool_size: int, specifying the height and width of the pooling window
+        stride: int
+        mode: str, one of ['max', 'average']
+    
+    """
+    
+    def __init__(self,pool_size, stride, mode = 'max'):
+        self.pool_size = pool_size
+        self.stride = stride
+        self.mode = mode
+        
+    def forward(self,input_X):
+        batch_size, in_H, in_W, in_channels = input_X.shape
+        
+        out_H, out_W = _get_out_shape(self.pool_size,0,self.stride,in_H,in_W)
+        out_C = in_channels
+        
+        #Initialize output
+        out_X = np.zeros((batch_size,out_H,out_W,out_C))
+        
+        for i in range(batch_size):
+            for h in range(out_H):
+                for w in range(out_W):
+                    for c in range(out_C):
+                        vert_start,vert_end,horiz_start,horiz_end=\
+                        _get_corners(h,w,self.pool_size,self.stride)
+                        prev_slice = \
+                        input_X[i,vert_start:vert_end,horiz_start:horiz_end,c]
+                        
+                        if self.mode =='max':
+                            out_X[i,h,w,c] = np.max(prev_slice)
+                        elif self.mode == 'average':
+                            out_X[i,h,w,c] = np.mean(prev_slice)
+        #Store cache                    
+        self.cache = (input_X)
+        
+        assert(out_X.shape==(batch_size,out_H,out_W,out_C))
+        
+        return out_X
   
-def _get_out_shape(filter_size,padding,in_h,in_w):
+    
+def _get_out_shape(filter_size,padding,stride,in_h,in_w):
     
     """Calculate output shape
     """
-    out_h = int((in_h+2*padding-filter_size)/2 + 1)
-    out_w = int((in_w+2*padding-filter_size)/2 + 1)
+    out_h = int((in_h + 2*padding-filter_size)/stride + 1)
+    out_w = int((in_w + 2*padding-filter_size)/stride + 1)
     
     return out_h,out_w
+
+def _get_corners(height,width,filter_size,stride):
+    """Find the corners of the current "slice"
+    """
+    #Find the corners of the current "slice"
+    vert_start = height*stride
+    vert_end = vert_start + filter_size
+    horiz_start = width*stride
+    horiz_end = horiz_start + filter_size
+    return vert_start,vert_end,horiz_start,horiz_end
