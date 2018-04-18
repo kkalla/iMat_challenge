@@ -17,7 +17,8 @@ from data_utils import Data_loader
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--select-set",help="one of train/test/valid",type=str)
-parser.add_argument("--save_dir",help="directory path to save images",type=str)
+parser.add_argument("--save_dir",help="directory path to save images",type=str,
+default='../data')
 args = parser.parse_args()
 
 def download_images(id_url_list):
