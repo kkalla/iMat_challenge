@@ -17,7 +17,8 @@ from data_utils import Data_loader
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--select-set",help="one of train/test/valid",type=str)
-parser.add_argument("--save_dir",help="directory path to save images",type=str)
+parser.add_argument("--save_dir",help="directory path to save images",type=str,
+default='../data')
 args = parser.parse_args()
 
 def download_images(id_url_list):
@@ -85,7 +86,7 @@ def get_id_url_list(which_set):
     images = selected_set['images']
     for item in images:
         url = item['url'][0]
-        image_id = item['image_id']
+        image_id = str(item['image_id'])
         if which_set == 'train' or which_set == "valid":
             image_id = "{}_{}".format(image_id, id_label_list[image_id])
         id_url_list.append((image_id,url))
