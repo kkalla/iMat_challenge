@@ -34,6 +34,9 @@ def download_images(id_url_list):
     
     
     save_dir = args.save_dir
+    if save_dir=="":
+        print("Warning: check --save_dir!!")
+        return
     
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
@@ -73,7 +76,7 @@ def download_images(id_url_list):
 def get_id_url_list(which_set):
     data_loader = Data_loader()
     selected_set = data_loader.load_datasets(data_dir='../data',which_set=which_set)
-    if which_set == 'train':
+    if which_set == 'train' or which_set== "valid":
         ann = selected_set['annotations']
         id_label_list = {}
         for a in ann:
@@ -84,7 +87,7 @@ def get_id_url_list(which_set):
     for item in images:
         url = item['url'][0]
         image_id = item['image_id']
-        if which_set == 'train':
+        if which_set == 'train' or which_set == "valid":
             image_id = "{}_{}".format(image_id, id_label_list[image_id])
         id_url_list.append((image_id,url))
     return id_url_list
@@ -94,11 +97,11 @@ def main():
     if which_set not in ['train','test','valid']:
         print("Warning: check --select-set!!")
         return
-    train_list = get_id_url_list(which_set)
+    url_list = get_id_url_list(which_set)
     pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
-    with tqdm(total=len(train_list)) as t:
+    with tqdm(total=len(url_list)) as t:
         for _ in pool.imap_unordered(
-                download_images,train_list):
+                download_images,url_list):
             t.update(1)
     
     
