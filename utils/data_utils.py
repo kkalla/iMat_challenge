@@ -55,7 +55,7 @@ class Data_loader():
         train_dataset_path = os.path.join(train_images_dir,'train_dataset.npy')
         if not os.path.exists(train_dataset_path):
             print("There is no train_dataset.npy")
-            if not len(os.listdir(train_images_dir)) == len(
+            if not len(os.listdir(train_images_dir))-1 == len(
                     os.listdir(os.path.join(data_dir,'train_images/resized'))):
                 print("Execute reshaping and save")
                 reshape_and_save(train_images_dir)
