@@ -40,8 +40,12 @@ def reshape(image_loc):
     save_dir = os.path.join(image_dir,'resized')
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
-    image_resized.save(os.path.join(save_dir,file_name),
+    if not os.path.exists(os.path.join(save_dir,file_name)):
+        image_resized.save(os.path.join(save_dir,file_name),
                        format='JPEG',quality=100)
+    else:
+        print(file_name," already exists!")
+    
     
 def convert_to_numpy(resized_image_dir,save_dir):
     """Convert images to numpy array and save as .npy file
