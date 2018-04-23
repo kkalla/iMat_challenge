@@ -11,7 +11,7 @@ import json
 import pandas as pd
 import numpy as np
 
-from .image_utils import reshape_and_save
+from image_utils import reshape_and_save
 
 class Data_loader():
     
@@ -56,7 +56,7 @@ class Data_loader():
         if not os.path.exists(train_dataset_path):
             print("There is no train_dataset.npy")
             print("Execute reshaping and save")
-            reshape_and_save(train_images_dir,train_images_dir,'train_dataset.npy')
+            reshape_and_save(train_images_dir)
         else:
             print("Loading train dataset")
             train_dataset = np.load(train_dataset_path)
