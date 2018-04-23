@@ -28,7 +28,7 @@ def main():
     classifier = tf.estimator.Estimator(
             model_fn=simple_cnn_model.simpleConvModel_fn,model_dir='log/simpleConv')
     #Set up logging
-    tensors_to_log={'probabilities':'softmax_tensor','loss':'loss'}
+    tensors_to_log={'loss':'loss'}
     logging_hook=tf.train.LoggingTensorHook(
             tensors=tensors_to_log,every_n_iters=1000)
     
