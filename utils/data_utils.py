@@ -58,7 +58,7 @@ class Data_loader():
             print("Execute reshaping and save")
             reshape_and_save(train_images_dir)
             print("Convert to numpy array...")
-            convert_to_numpy(os.path.join(self.data_dir,'train_images/resized'),
+            convert_to_numpy(os.path.join(data_dir,'train_images/resized'),
                              train_dataset_path)
             print("Loading train dataset")
             train_dataset = np.load(train_dataset_path)
