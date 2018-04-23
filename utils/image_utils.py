@@ -43,6 +43,33 @@ def reshape(image_loc):
     image_resized.save(os.path.join(save_dir,file_name),
                        format='JPEG',quality=100)
     
+def convert_to_numpy(resized_image_dir,save_dir):
+    """Convert images to numpy array and save as .npy file
+    include images ids and labels
+    """
+    dir_list = os.listdir(path=resized_image_dir)
+    image_data = []
+    image_ids = []
+    image_labels = []
+    k = 0
+    for i in dir_list:
+        image_file = os.path.join(resized_image_dir,i)
+        image = Image.open(image_file)
+        _image_id = i.split('.')[0].split('_')[0]
+        _image_label = i.split('.')[0].split('_')[1]
+        _image_data = np.array(list(image.getdata())).reshape((800,800,3))
+        
+        image_data.append(_image_data)
+        image_ids.append(_image_id)
+        image_labels.append(_image_label)
+        if k%1000==0:
+            print("# ",k,"running....")
+        k+=1
+    
+    image_dataset = {'image_id':image_ids,'image_label':image_labels,
+                     'features':image_data}
+    image_dataset = np.array(image_dataset)
+    np.save(image_dataset,save_dir)
     
     
     

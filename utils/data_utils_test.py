@@ -11,6 +11,7 @@ def test_data_loader():
     data_loader = Data_loader()
     train,test,valid,sample = data_loader.load_datasets(data_dir='../data')
     print(train.keys())
+    print(data_loader.load_image_data(data_dir='../data'))
     
 def main():
     test_data_loader()
