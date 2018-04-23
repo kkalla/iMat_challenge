@@ -6,11 +6,14 @@ Created on Tue Apr 17 21:45:21 2018
 
 @author: user
 """
+from __future__ import absolute_import
+import os
 
 import numpy as np
 import tensorflow as tf
 
 from common import simple_cnn_model
+from utils.data_utils import Data_loader
 
 tf.logging.set_verbosity(tf.logging.INFO)
 
@@ -30,23 +33,61 @@ def main():
     #Set up logging
     tensors_to_log={'loss':'loss'}
     logging_hook=tf.train.LoggingTensorHook(
-            tensors=tensors_to_log,every_n_iters=1000)
+            tensors=tensors_to_log,every_n_iter=1000)
     
     #Train the model
-    train_input_fn = tf.estimator.inputs.numpy_input_fn(
-            x={'x':train_data},
-            y=train_labels,
-            batch_size=10000,
-            num_epochs=1000,
-            shuffle=True)
+#    train_input_fn = tf.estimator.inputs.numpy_input_fn(
+#            x={'x':train_data},
+#            y=train_labels,
+#            batch_size=10000,
+#            num_epochs=1000,
+#            shuffle=True)
+    def train_input_fn():
+        def parser(filename,label):
+            image_string = tf.read_file(filename)
+            image_decoded = tf.image.decode_jpeg(image_string)
+            image_resized = tf.image.resize_images(image_decoded,[800,800])
+            return {'x':image_resized}, label
+        filenames, labels = Data_loader().load_image_data('data/train_images')
+        filenames = tf.constant(filenames)
+        labels = tf.constant(labels)
+        
+        dataset = tf.data.Dataset.from_tensor_slices((filenames,labels))
+        dataset = dataset.map(parser)
+        dataset = dataset.shuffle(buffer_size=10000)
+        dataset = dataset.batch(30)
+        dataset = dataset.repeat(10)
+        iterator = dataset.make_one_shot_iterator()
+        
+        features, labels = iterator.get_next()
+        return features, labels
+        
+        
     classifier.train(input_fn=train_input_fn,hooks=[logging_hook])
     
     #Eval the model
-    eval_input_fn = tf.estimator.inputs.numpy_input_fn(
-            x={'x':eval_data},
-            y=eval_labels,
-            num_epochs=1,
-            shuffle=False)
+#    eval_input_fn = tf.estimator.inputs.numpy_input_fn(
+#            x={'x':eval_data},
+#            y=eval_labels,
+#            num_epochs=1,
+#            shuffle=False)
+    def eval_input_fn():
+        def parser(filename,label):
+            image_string = tf.read_file(filename)
+            image_decoded = tf.image.decode_jpeg(image_string)
+            image_resized = tf.image.resize_images(image_decoded,[800,800])
+            return {'x':image_resized}, label
+        filenames, labels = Data_loader().load_image_data('data/valid_images')
+        filenames = tf.constant(filenames)
+        labels = tf.constant(labels)
+        
+        dataset = tf.data.Dataset.from_tensor_slices((filenames,labels))
+        dataset = dataset.map(parser)
+        iterator = dataset.make_one_shot_iterator()
+        
+        features, labels = iterator.get_next()
+        return features, labels
+    
     eval_results = classifier.evaluate(input_fn=eval_input_fn)
     print(eval_results)
     
