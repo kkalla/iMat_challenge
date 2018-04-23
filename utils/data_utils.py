@@ -11,7 +11,7 @@ import json
 import pandas as pd
 import numpy as np
 
-from image_utils import reshape_and_save
+from image_utils import reshape_and_save,convert_to_numpy
 
 class Data_loader():
     
@@ -46,22 +46,29 @@ class Data_loader():
         if which_set == 'valid':
             return valid_set
         
-    def load_image_data(self):
-        """Load train and valie images
+    def load_image_data(self,data_dir):
+        """Load train and valid images
         
         """
-        train_images_dir = os.path.join(self.data_dir,'train_images')
-        valid_images_dir = os.path.join(self.data_dir,'valid_images')
+        train_images_dir = os.path.join(data_dir,'train_images')
+        valid_images_dir = os.path.join(data_dir,'valid_images')
         train_dataset_path = os.path.join(train_images_dir,'train_dataset.npy')
         if not os.path.exists(train_dataset_path):
             print("There is no train_dataset.npy")
             print("Execute reshaping and save")
             reshape_and_save(train_images_dir)
+            print("Convert to numpy array...")
+            convert_to_numpy(os.path.join(data_dir,'train_images/resized'),
+                             train_dataset_path)
+            print("Loading train dataset")
+            train_dataset = np.load(train_dataset_path)
+            print(train_dataset['features'].shape)
         else:
             print("Loading train dataset")
             train_dataset = np.load(train_dataset_path)
             print(train_dataset['features'].shape)
-            
+        
+        return train_dataset
             
             
         
