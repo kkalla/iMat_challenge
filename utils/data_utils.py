@@ -11,7 +11,7 @@ import json
 import pandas as pd
 import numpy as np
 
-from image_utils import reshape_and_save,convert_to_numpy
+from .image_utils import reshape_and_save,convert_to_numpy
 
 class Data_loader():
     
@@ -50,27 +50,16 @@ class Data_loader():
         """Load train and valid images
         
         """
-        train_images_dir = os.path.join(data_dir,'train_images')
-        valid_images_dir = os.path.join(data_dir,'valid_images')
-        train_dataset_path = os.path.join(train_images_dir,'train_dataset.npy')
-        if not os.path.exists(train_dataset_path):
-            print("There is no train_dataset.npy")
-            if not len(os.listdir(train_images_dir)) == len(
-                    os.listdir(os.path.join(data_dir,'train_images/resized'))):
-                print("Execute reshaping and save")
-                reshape_and_save(train_images_dir)
-            print("Convert to numpy array...")
-            convert_to_numpy(os.path.join(data_dir,'train_images/resized'),
-                             train_dataset_path)
-            print("Loading train dataset")
-            train_dataset = np.load(train_dataset_path)
-            print(train_dataset['features'].shape)
-        else:
-            print("Loading train dataset")
-            train_dataset = np.load(train_dataset_path)
-            print(train_dataset['features'].shape)
+        filenames = []
+        labels = []
+        for file in os.scandir(data_dir):
+            label = file.name.split('.')[0].split('_')
+            if len(label) == 2:
+                label = int(label[1])
+                labels.append(label)
+                filenames.append(file.path)
         
-        return train_dataset
+        return filenames,labels
             
             
         
