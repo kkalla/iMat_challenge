@@ -86,7 +86,7 @@ def get_id_url_list(which_set):
     images = selected_set['images']
     for item in images:
         url = item['url'][0]
-        image_id = str(item['image_id'])
+        image_id = item['image_id']
         if which_set == 'train' or which_set == "valid":
             image_id = "{}_{}".format(image_id, id_label_list[image_id])
         id_url_list.append((image_id,url))
