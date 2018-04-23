@@ -33,18 +33,19 @@ def reshape_and_save(image_dir):
     print("Done reshaping!!")
     
 def reshape(image_loc):
-    image_dir = os.path.split(image_loc)[0]
-    file_name = os.path.split(image_loc)[1]
-    image = Image.open(image_loc)
-    image_resized = image.resize((800,800))
-    save_dir = os.path.join(image_dir,'resized')
-    if not os.path.exists(save_dir):
-        os.mkdir(save_dir)
-    if not os.path.exists(os.path.join(save_dir,file_name)):
-        image_resized.save(os.path.join(save_dir,file_name),
-                       format='JPEG',quality=100)
-    else:
-        print(file_name," already exists!")
+    if not os.path.isdir(image_loc):
+        image_dir = os.path.split(image_loc)[0]
+        file_name = os.path.split(image_loc)[1]
+        image = Image.open(image_loc)
+        image_resized = image.resize((800,800))
+        save_dir = os.path.join(image_dir,'resized')
+        if not os.path.exists(save_dir):
+            os.mkdir(save_dir)
+        if not os.path.exists(os.path.join(save_dir,file_name)):
+            image_resized.save(os.path.join(save_dir,file_name),
+                           format='JPEG',quality=100)
+    
+        
     
     
 def convert_to_numpy(resized_image_dir,save_dir):
