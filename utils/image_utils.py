@@ -58,7 +58,7 @@ def convert_to_numpy(resized_image_dir,save_dir):
     image_labels = []
     k = 0
     for item in os.scandir(path=resized_image_dir):
-        image = Image.open(item)
+        image = Image.open(item.path)
         _image_id = item.split('.')[0].split('_')[0]
         _image_label = item.split('.')[0].split('_')[1]
         _image_data = np.array(list(image.getdata())).reshape((800,800,3))
