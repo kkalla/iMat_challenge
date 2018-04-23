@@ -33,18 +33,19 @@ def reshape_and_save(image_dir):
     print("Done reshaping!!")
     
 def reshape(image_loc):
-    image_dir = os.path.split(image_loc)[0]
-    file_name = os.path.split(image_loc)[1]
-    image = Image.open(image_loc)
-    image_resized = image.resize((800,800))
-    save_dir = os.path.join(image_dir,'resized')
-    if not os.path.exists(save_dir):
-        os.mkdir(save_dir)
-    if not os.path.exists(os.path.join(save_dir,file_name)):
-        image_resized.save(os.path.join(save_dir,file_name),
-                       format='JPEG',quality=100)
-    else:
-        print(file_name," already exists!")
+    if not os.path.isdir(image_loc):
+        image_dir = os.path.split(image_loc)[0]
+        file_name = os.path.split(image_loc)[1]
+        image = Image.open(image_loc)
+        image_resized = image.resize((800,800))
+        save_dir = os.path.join(image_dir,'resized')
+        if not os.path.exists(save_dir):
+            os.mkdir(save_dir)
+        if not os.path.exists(os.path.join(save_dir,file_name)):
+            image_resized.save(os.path.join(save_dir,file_name),
+                           format='JPEG',quality=100)
+    
+        
     
     
 def convert_to_numpy(resized_image_dir,save_dir):
@@ -56,11 +57,10 @@ def convert_to_numpy(resized_image_dir,save_dir):
     image_ids = []
     image_labels = []
     k = 0
-    for i in dir_list:
-        image_file = os.path.join(resized_image_dir,i)
-        image = Image.open(image_file)
-        _image_id = i.split('.')[0].split('_')[0]
-        _image_label = i.split('.')[0].split('_')[1]
+    for item in os.scandir(path=resized_image_dir):
+        image = Image.open(item)
+        _image_id = item.split('.')[0].split('_')[0]
+        _image_label = item.split('.')[0].split('_')[1]
         _image_data = np.array(list(image.getdata())).reshape((800,800,3))
         
         image_data.append(_image_data)
