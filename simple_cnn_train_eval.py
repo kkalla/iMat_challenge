@@ -63,7 +63,7 @@ def main():
         return features, labels
         
         
-    classifier.train(input_fn=train_input_fn,hooks=[logging_hook])
+#    classifier.train(input_fn=train_input_fn,hooks=[logging_hook])
     
     #Eval the model
 #    eval_input_fn = tf.estimator.inputs.numpy_input_fn(
