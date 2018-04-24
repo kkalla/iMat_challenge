@@ -75,15 +75,16 @@ def main():
         def parser(filename,label):
             image_string = tf.read_file(filename)
             image_decoded = tf.image.decode_jpeg(image_string)
-           
-            return {'x':image_decoded}, label
+            image_resized = tf.image.resize_images(image_decoded,[800,800])
+            return {'x':image_resized}, label
         filenames, labels = Data_loader().load_image_data('data/valid_images')
         filenames = tf.constant(filenames)
         labels = tf.constant(labels)
         
         dataset = tf.data.Dataset.from_tensor_slices((filenames,labels))
         dataset = dataset.map(parser)
-        iterator = dataset.make_initializable_iterator()
+        dataset = dataset.batch(32)
+        iterator = dataset.make_one_shot_iterator()
         
         features, labels = iterator.get_next()
         return features, labels
