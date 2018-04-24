@@ -55,7 +55,7 @@ class Data_loader():
         for file in os.scandir(data_dir):
             label = file.name.split('.')[0].split('_')
             if len(label) == 2:
-                label = int(label[1])
+                label = int(label[1])-1
                 labels.append(label)
                 filenames.append(file.path)
         
