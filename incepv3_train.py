@@ -35,6 +35,7 @@ def main():
             image_string = tf.read_file(filename)
             image_decoded = tf.image.decode_jpeg(image_string)
             image_resized = tf.image.resize_images(image_decoded,[800,800])
+            image_resized.set_shape([800,800,3])
             label = tf.one_hot(label,depth=128)
             return {'input_1':image_resized}, label
         filenames, labels = Data_loader().load_image_data('data/train_images')
