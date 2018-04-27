@@ -83,11 +83,12 @@ def main():
         
         dataset = tf.data.Dataset.from_tensor_slices((filenames,labels))
         dataset = dataset.map(parser)
+        dataset = dataset.batch(32)
         iterator = dataset.make_one_shot_iterator()
         
         features, labels = iterator.get_next()
         return features, labels
-    
+   
     eval_results = classifier.evaluate(input_fn=eval_input_fn)
     print(eval_results)
     
