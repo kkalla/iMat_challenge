@@ -8,6 +8,7 @@ Created on Fri Apr 27 13:30:29 2018
 """
 
 import tensorflow as tf
+import keras.backend as K
 
 from utils.data_utils import Data_loader
 from keras.layers import Input
@@ -37,7 +38,7 @@ def main():
         iterator = dataset.make_one_shot_iterator()
         
         
-        return iterator.get_next()
+        return K.get_session.run(iterator.get_next())
     
     incepv3_model = InceptionV3(include_top=False, weights='imagenet',
                                 input_shape=(800,800,3))
