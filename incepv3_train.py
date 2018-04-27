@@ -36,9 +36,9 @@ def main():
         dataset = dataset.shuffle(buffer_size=10000)
         dataset = dataset.batch(30)
         iterator = dataset.make_one_shot_iterator()
+        next_batch = iterator.get_next()
         
-        
-        return K.get_session.run(iterator.get_next())
+        return K.get_session.run(next_batch)
     
     incepv3_model = InceptionV3(include_top=False, weights='imagenet',
                                 input_shape=(800,800,3))
