@@ -36,8 +36,8 @@ def main():
         dataset = dataset.batch(30)
         iterator = dataset.make_one_shot_iterator()
         
-        features, labels = iterator.get_next()
-        return features, labels
+        
+        return iterator.get_next()
     
     incepv3_model = InceptionV3(include_top=False, weights='imagenet',
                                 input_shape=(800,800,3))
