@@ -22,8 +22,8 @@ hparams = {
         }
 
 def main():
-    incepv3_model = InceptionV3(include_top=True, weights='imagenet',
-                                input_shape=(800,800,3),classes=128)
+    incepv3_model = InceptionV3(include_top=True, weights=None,
+                                input_shape=(299,299,3),classes=128)
     incepv3_model.compile(optimizer=hparams['optimizer'],loss=hparams['loss'],
                           metrics=['accuracy'],)
     
