@@ -38,7 +38,7 @@ def main():
         iterator = dataset.make_one_shot_iterator()
         next_batch = iterator.get_next()
         
-        return K.get_session.run(next_batch)
+        return K.get_session().run(next_batch)
     
     incepv3_model = InceptionV3(include_top=False, weights='imagenet',
                                 input_shape=(800,800,3))
