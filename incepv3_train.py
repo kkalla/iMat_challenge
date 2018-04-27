@@ -22,8 +22,8 @@ hparams = {
         }
 
 def main():
-    incepv3_model = InceptionV3(include_top=False, weights='imagenet',
-                                input_shape=(800,800,3))
+    incepv3_model = InceptionV3(include_top=True, weights='imagenet',
+                                input_shape=(800,800,3),classes=128)
     incepv3_model.compile(optimizer=hparams['optimizer'],loss=hparams['loss'],
                           metrics=['accuracy'],)
     
@@ -34,8 +34,8 @@ def main():
         def parser(filename,label):
             image_string = tf.read_file(filename)
             image_decoded = tf.image.decode_jpeg(image_string)
-            image_resized = tf.image.resize_images(image_decoded,[800,800])
-            image_resized.set_shape([800,800,3])
+            image_resized = tf.image.resize_images(image_decoded,[299,299])
+            image_resized.set_shape([299,299,3])
             label = tf.one_hot(label,depth=128)
             return {'input_1':image_resized}, label
         filenames, labels = Data_loader().load_image_data('data/train_images')
