@@ -25,7 +25,7 @@ def main():
             image_decoded = tf.image.decode_jpeg(image_string)
             image_resized = tf.image.resize_images(image_decoded,[800,800])
             label = tf.one_hot(label,depth=128)
-            return {'x':image_resized}, label
+            return [image_resized, label]
         filenames, labels = Data_loader().load_image_data('data/train_images')
         filenames = tf.constant(filenames)
         labels = tf.constant(labels)
