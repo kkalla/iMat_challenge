@@ -11,7 +11,7 @@ import os
 import tensorflow as tf
 
 from utils.data_utils import Data_loader
-from tensorflow.keras.applications.inception_v3 import InceptionV3
+from tensorflow.python.keras.applications.inception_v3 import InceptionV3
 
 batch_size = 30
 model_dir = os.path.join(os.getcwd(),'log/inception_v3')
