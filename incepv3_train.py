@@ -50,7 +50,7 @@ def main():
         
         return batch_features,batch_labels
     
-    incepv3_classifier.train(input_fn=train_input_fn(),max_steps=max_train_step)
+    incepv3_classifier.train(input_fn=train_input_fn,max_steps=max_train_step)
     
     
     
