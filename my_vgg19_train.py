@@ -13,6 +13,7 @@ import keras.backend as K
 from common.my_vgg19 import load_model
 from utils.data_utils import Data_loader
 from keras.callbacks import ModelCheckpoint
+from keras.preprocessing.image import ImageDataGenerator
 
 batch_size = 32
 epochs=1
@@ -22,29 +23,35 @@ model_dir = 'keras_model/my_vgg19'
 hparams = {'loss':'categorical_crossentropy',
            'optimizer':'adam',
            }
-
+train_dir = 'data/train_images'
 def main():
-    def train_input_fn():
-        def parser(filename,label):
-            image_string = tf.read_file(filename)
-            image_decoded = tf.image.decode_jpeg(image_string)
-            image_resized = tf.image.resize_images(image_decoded,[224,224])
-            image_resized.set_shape([224,224,3])
-            label = tf.one_hot(label,depth=num_classes)
-            return {'input_1':image_resized}, label
-        filenames, labels = Data_loader().load_image_data('data/train_images')
-        filenames = tf.constant(filenames)
-        labels = tf.constant(labels)
-        
-        dataset = tf.data.Dataset.from_tensor_slices((filenames,labels))
-        dataset = dataset.map(parser)
-        dataset = dataset.shuffle(buffer_size=10000)
-        dataset = dataset.batch(batch_size)
-        iterator = dataset.make_one_shot_iterator()
-        batch_features, batch_labels = K.get_session().run(iterator.get_next())
-        while True:
-            yield batch_features,batch_labels
-    
+#    def train_input_fn():
+#        def parser(filename,label):
+#            image_string = tf.read_file(filename)
+#            image_decoded = tf.image.decode_jpeg(image_string)
+#            image_resized = tf.image.resize_images(image_decoded,[224,224])
+#            image_resized.set_shape([224,224,3])
+#            label = tf.one_hot(label,depth=num_classes)
+#            return {'input_1':image_resized}, label
+#        filenames, labels = Data_loader().load_image_data('data/train_images')
+#        filenames = tf.constant(filenames)
+#        labels = tf.constant(labels)
+#        
+#        dataset = tf.data.Dataset.from_tensor_slices((filenames,labels))
+#        dataset = dataset.map(parser)
+#        dataset = dataset.shuffle(buffer_size=10000)
+#        dataset = dataset.batch(batch_size)
+#        iterator = dataset.make_one_shot_iterator()
+#        batch_features, batch_labels = K.get_session().run(iterator.get_next())
+#        while True:
+#            yield batch_features,batch_labels
+#    
+    train_datagen = ImageDataGenerator()
+    train_generator = train_datagen.flow_from_directory(
+            directory=train_dir,
+            target_size=(224,224),
+            batch_size=batch_size,
+            class_mode='categorical')
     my_model = load_model()
     my_model.compile(optimizer=hparams['optimizer'],loss=hparams['loss'],metrics=['acc'])
     my_model.summary()
@@ -58,7 +65,7 @@ def main():
     history = LossHistory()
     model_checkpointer = ModelCheckpoint(
             filepath=os.path.join(model_dir,'weights.{epoch:02d}-{loss:.2f}.hdf5'))
-    my_model.fit_generator(generator=train_input_fn(),workers=0,verbose=1,
+    my_model.fit_generator(generator=train_generator,workers=0,verbose=1,
                            steps_per_epoch=steps_per_epoch,epochs=epochs,
                            callbacks=[history,model_checkpointer])
     print(history.losses)
