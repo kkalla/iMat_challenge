@@ -10,6 +10,9 @@ import os
 
 import pandas as pd
 
+from PIL import ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
+
 from keras.preprocessing.image import ImageDataGenerator
 
 model_path = 'keras_model/my_vgg19/my_vgg19.h5'
@@ -27,13 +30,13 @@ def main():
     my_vgg19 = keras.models.load_model(model_path)
     predictions = my_vgg19.predict_generator(generator=test_generator)
     image_ids = []
-    for file in os.scandir(test_data_dir):
+    for file in os.scandir(os.path.join(test_data_dir,'test')):
         if file.is_file():
             image_ids.append(file.name.split('.')[0])
     
     #Save results
-    #result = pd.DataFrame({'id':image_ids,'predicted':predictions})
-    #result.to_csv('my_vgg19_submisssion.csv')
+    result = pd.DataFrame({'id':image_ids,'predicted':predictions})
+    result.to_csv('my_vgg19_submisssion.csv')
     print(predictions)
     
 if __name__=="__main__":
