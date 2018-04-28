@@ -14,7 +14,8 @@ from utils.data_utils import Data_loader
 batch_size = 1000
 epochs=1
 steps_per_epoch=10
-hparams = {'loss':'categorical_entropy',
+num_classes=128
+hparams = {'loss':'categorical_crossentropy',
            'optimizer':'adam',
            }
 
@@ -25,7 +26,7 @@ def main():
             image_decoded = tf.image.decode_jpeg(image_string)
             image_resized = tf.image.resize_images(image_decoded,[224,224])
             image_resized.set_shape([224,224,3])
-            label = tf.one_hot(label,depth=128)
+            label = tf.one_hot(label,depth=num_classes)
             return {'input_1':image_resized}, label
         filenames, labels = Data_loader().load_image_data('data/train_images')
         filenames = tf.constant(filenames)
