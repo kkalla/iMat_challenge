@@ -15,16 +15,32 @@ from utils.data_utils import Data_loader
 from keras.callbacks import ModelCheckpoint
 from keras.preprocessing.image import ImageDataGenerator
 
-batch_size = 32
-epochs=1
-steps_per_epoch= 200
-num_classes=128
 model_dir = 'keras_model/my_vgg19'
 hparams = {'loss':'categorical_crossentropy',
            'optimizer':'adam',
            }
 train_dir = 'data/train_images'
+
+batch_size = 32
+epochs=1
+steps_per_epoch= 200
+num_classes=128
+
+def _get_nb_train(train_dir):
+    file_total = 0
+    for item in os.scandir(train_dir):
+        if item.is_dir():
+            file_total += _get_nb_train(item.path)
+        else:
+            file_total += 1
+    
+    return file_total
+    
+    
+nb_images = _get_nb_train(train_dir)
+
 def main():
+    print(nb_images)
 #    def train_input_fn():
 #        def parser(filename,label):
 #            image_string = tf.read_file(filename)
@@ -71,8 +87,6 @@ def main():
     print(history.losses)
     print("Saving trained weights and model...")
     my_model.save(os.path.join(model_dir,'my_vgg19.h5'))
-    
-    
     
 if __name__=="__main__":
     main()
