@@ -6,7 +6,7 @@ Created on Sat Apr 28 14:04:03 2018
 """
 
 from keras.applications.vgg19 import VGG19
-from keras.model import Model
+from keras.models import Model
 from keras.layers import Flatten,Dense,Dropout
 from keras.layers.normalization import BatchNormalization
 
