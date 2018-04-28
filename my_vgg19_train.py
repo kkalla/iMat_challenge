@@ -12,10 +12,11 @@ import keras.backend as K
 from common.my_vgg19 import load_model
 from utils.data_utils import Data_loader
 
-atch_size = 50
-epochs=1
-steps_per_epoch=100
+batch_size = 30
+epochs=10
+steps_per_epoch= 10000
 num_classes=128
+model_path = 'keras_model/my_vgg19.h5'
 hparams = {'loss':'categorical_crossentropy',
            'optimizer':'adam',
            }
@@ -57,6 +58,8 @@ def main():
                            steps_per_epoch=steps_per_epoch,epochs=epochs,
                            callbacks=[history])
     print(history.losses)
+    print("Saving trained weights and model...")
+    my_model.save(model_path)
     
     
     
