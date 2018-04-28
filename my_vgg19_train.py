@@ -57,7 +57,7 @@ def main():
     
     history = LossHistory()
     model_checkpointer = ModelCheckpoint(
-            filepath=os.path.join(model_dir,'weights.{epoch:02d}-{val_loss:.2f}.hdf5'))
+            filepath=os.path.join(model_dir,'weights.{epoch:02d}-{loss:.2f}.hdf5'))
     my_model.fit_generator(generator=train_input_fn(),workers=0,verbose=1,
                            steps_per_epoch=steps_per_epoch,epochs=epochs,
                            callbacks=[history,model_checkpointer])
