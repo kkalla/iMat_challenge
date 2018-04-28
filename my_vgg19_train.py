@@ -11,6 +11,7 @@ import tensorflow as tf
 from common.my_vgg19 import load_model
 from utils.data_utils import Data_loader
 
+
 batch_size = 1000
 epochs=1
 steps_per_epoch=10
