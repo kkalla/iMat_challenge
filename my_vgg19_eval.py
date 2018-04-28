@@ -15,7 +15,7 @@ from utils.data_utils import Data_loader
 
 model_path = 'keras_model/my_vgg19/my_vgg19.h5'
 num_classes = 128
-batch_size = 30
+batch_size = 32
 
 
 def main():
