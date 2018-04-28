@@ -8,32 +8,28 @@ Created on Sat Apr 28 20:41:00 2018
 import keras
 import os
 
-import numpy as np
 import pandas as pd
 
-from PIL import Image
+from keras.preprocessing.image import ImageDataGenerator
 
-model_path = 'keras_model/my_vgg19/weights.06-0.00.hdf5'
+model_path = 'keras_model/my_vgg19/my_vgg19.h5'
 test_data_dir = 'data/test_images'
+batch_size = 32
 
 def main():
-    image_ids = []
-    images = []
-    for file in os.scandir(test_data_dir):
-        _image_id = file.name.split('.')[0]    
-        image_ids.append(_image_id)
-        image = Image.open(file.path)
-        image_resized = image.resize((224,224))
-        image_list = list(image_resized.getdata())
-        image_array = np.array(image_list,dtype='uint8')
-        image_array = image_array.reshape((224,224,3))
-        images.append(image_array)
-    
-    num_images = len(os.listdir(test_data_dir))
-    images = np.array(images).reshape((num_images,224,224,3))
-    
+    test_datagen = ImageDataGenerator()
+    test_generator = test_datagen.flow_from_directory(
+            test_data_dir,
+            target_size=(224,224),
+            batch_size=batch_size,
+            shuffle=False,
+            class_mode=None)
     my_vgg19 = keras.models.load_model(model_path)
-    predictions = my_vgg19.predict(x=images)
+    predictions = my_vgg19.predict_generator(generator=test_generator)
+    image_ids = []
+    for file in os.scandir(test_data_dir):
+        if file.is_file():
+            image_ids.append(file.name.split('.')[0])
     
     #Save results
     result = pd.DataFrame({'id':image_ids,'predicted':predictions})
