@@ -21,11 +21,6 @@ hparams = {'loss':'categorical_crossentropy',
            }
 train_dir = 'data/train_images'
 
-batch_size = 32
-epochs=1
-steps_per_epoch= 200
-num_classes=128
-
 def _get_nb_train(train_dir):
     file_total = 0
     for item in os.scandir(train_dir):
@@ -38,6 +33,10 @@ def _get_nb_train(train_dir):
     
     
 nb_images = _get_nb_train(train_dir)
+batch_size = 32
+epochs=1
+steps_per_epoch= nb_images/batch_size
+num_classes=128
 
 def main():
     print(nb_images)
@@ -68,7 +67,11 @@ def main():
             target_size=(224,224),
             batch_size=batch_size,
             class_mode='categorical')
-    my_model = load_model()
+    model_path = os.path.join(model_dir,'my_vgg19.h5')
+    if os.path.exists(model_path):
+        my_model = keras.models.load_model(model_path)
+    else:
+        my_model = load_model()
     my_model.compile(optimizer=hparams['optimizer'],loss=hparams['loss'],metrics=['acc'])
     my_model.summary()
     class LossHistory(keras.callbacks.Callback):
@@ -86,7 +89,7 @@ def main():
                            callbacks=[history,model_checkpointer])
     print(history.losses)
     print("Saving trained weights and model...")
-    my_model.save(os.path.join(model_dir,'my_vgg19.h5'))
+    my_model.save()
     
 if __name__=="__main__":
     main()
