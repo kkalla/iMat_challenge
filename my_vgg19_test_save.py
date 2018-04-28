@@ -13,7 +13,7 @@ import pandas as pd
 
 from PIL import Image
 
-model_path = 'keras_model/my_vgg19/my_vgg19.h5'
+model_path = 'keras_model/my_vgg19/weights.06-0.00.hdf5'
 test_data_dir = 'data/test_images'
 
 def main():

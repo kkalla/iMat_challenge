@@ -15,7 +15,7 @@ from utils.data_utils import Data_loader
 from keras.callbacks import ModelCheckpoint
 
 batch_size = 32
-epochs=10
+epochs=1
 steps_per_epoch= 200
 num_classes=128
 model_dir = 'keras_model/my_vgg19'

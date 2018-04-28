@@ -7,15 +7,17 @@ Created on Sat Apr 28 14:04:03 2018
 
 from keras.applications.vgg19 import VGG19
 from keras.models import Model
-from keras.layers import Flatten,Dense,Dropout
+from keras.layers import Flatten,Dense,Dropout,Conv2D,MaxPooling2D
 from keras.layers.normalization import BatchNormalization
 
 num_classes=128
 
 def load_model():
     base_model = VGG19(include_top=False,weights='imagenet',input_shape=(224,224,3))
-    x = Flatten()(base_model.output)
-    x = Dense(4096, activation='relu')(x)
+    x = Conv2D(512,(3,3),activation='relu')(base_model.output)
+    x = MaxPooling2D((2,2))(x)
+    x = Flatten()(x)
+    x = Dense(1024, activation='relu')(x)
     x = Dropout(0.5)(x)
     x = BatchNormalization()(x)
     predictions = Dense(num_classes, activation='softmax')(x)
