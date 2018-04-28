@@ -7,13 +7,14 @@ Created on Sat Apr 28 14:26:14 2018
 import keras
 
 import tensorflow as tf
+import keras.backend as K
 
 from common.my_vgg19 import load_model
 from utils.data_utils import Data_loader
 
-batch_size = 1000
+batch_size = 50
 epochs=1
-steps_per_epoch=10
+steps_per_epoch=100
 num_classes=128
 hparams = {'loss':'categorical_crossentropy',
            'optimizer':'adam',
@@ -37,9 +38,9 @@ def main():
         dataset = dataset.shuffle(buffer_size=10000)
         dataset = dataset.batch(batch_size)
         iterator = dataset.make_one_shot_iterator()
-        batch_features, batch_labels = iterator.get_next()
-        
-        yield batch_features,batch_labels
+        batch_features, batch_labels = K.get_session().run(iterator.get_next())
+        while True:
+            yield batch_features,batch_labels
     
     my_model = load_model()
     my_model.compile(optimizer=hparams['optimizer'],loss=hparams['loss'],metrics=['acc'])
