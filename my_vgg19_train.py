@@ -5,18 +5,20 @@ Created on Sat Apr 28 14:26:14 2018
 @author: user
 """
 import keras
+import os
 
 import tensorflow as tf
 import keras.backend as K
 
 from common.my_vgg19 import load_model
 from utils.data_utils import Data_loader
+from keras.callbacks import ModelCheckpoint
 
 batch_size = 30
 epochs=10
 steps_per_epoch= 200
 num_classes=128
-model_path = 'keras_model/my_vgg19.h5'
+model_dir = 'keras_model/my_vgg19'
 hparams = {'loss':'categorical_crossentropy',
            'optimizer':'adam',
            }
@@ -54,12 +56,14 @@ def main():
             self.losses.append(logs.get('loss'))
     
     history = LossHistory()
+    model_checkpointer = ModelCheckpoint(
+            filepath=os.path.join(model_dir,'weights.{epoch:02d}-{val_loss:.2f}.hdf5'))
     my_model.fit_generator(generator=train_input_fn(),workers=0,verbose=1,
                            steps_per_epoch=steps_per_epoch,epochs=epochs,
-                           callbacks=[history])
+                           callbacks=[history,model_checkpointer])
     print(history.losses)
     print("Saving trained weights and model...")
-    my_model.save(model_path)
+    my_model.save(os.path.join(model_dir,'my_vgg19.h5'))
     
     
     
