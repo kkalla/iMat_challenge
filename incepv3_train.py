@@ -27,8 +27,8 @@ def main():
     incepv3_model.compile(optimizer=hparams['optimizer'],loss=hparams['loss'],
                           metrics=['accuracy'],)
     
-    incepv3_classifier = tf.keras.estimator.model_to_estimator(
-            keras_model=incepv3_model,model_dir=model_dir)
+#    incepv3_classifier = tf.keras.estimator.model_to_estimator(
+#            keras_model=incepv3_model,model_dir=model_dir)
     
     def train_input_fn():
         def parser(filename,label):
@@ -49,10 +49,11 @@ def main():
         iterator = dataset.make_one_shot_iterator()
         batch_features, batch_labels = iterator.get_next()
         
-        return batch_features,batch_labels
+        yield batch_features,batch_labels
     
-    incepv3_classifier.train(input_fn=train_input_fn,max_steps=max_train_step)
-    
+#    incepv3_classifier.train(input_fn=train_input_fn,max_steps=max_train_step)
+    history = incepv3_model.fit_generator(generator=train_input_fn(),steps_per_epoch=1,workers=0,verbose=1)
+    print(history.history['loss'])
     
     
 if __name__=="__main__":
