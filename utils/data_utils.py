@@ -58,6 +58,7 @@ class Data_loader():
                 label = int(label[1])-1
                 labels.append(label)
                 filenames.append(file.path)
+                
         
         return filenames,labels
             

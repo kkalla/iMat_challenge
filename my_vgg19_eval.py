@@ -29,7 +29,7 @@ def main():
             image_resized.set_shape([224,224,3])
             label = tf.one_hot(label,depth=num_classes)
             return {'input_1':image_resized}, label
-        filenames, labels = Data_loader().load_image_data('data/train_images')
+        filenames, labels = Data_loader().load_image_data('data/valid_images')
         filenames = tf.constant(filenames)
         labels = tf.constant(labels)
         
