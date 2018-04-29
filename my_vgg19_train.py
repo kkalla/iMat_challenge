@@ -22,7 +22,7 @@ hparams = {'loss':'categorical_crossentropy',
 train_dir = 'data/train_images'
 
 def _get_nb_train(train_dir):
-    file_total = 0
+    file_total=0
     for item in os.scandir(train_dir):
         if item.is_dir():
             file_total += _get_nb_train(item.path)
