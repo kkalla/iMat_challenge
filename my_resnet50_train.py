@@ -41,7 +41,7 @@ num_classes=128
 
 def _get_optimizer(hparams):
     if hparams['optimizer']=='adagrad':
-        return keras.optimizer.Adagrad(lr=hparams['learning_rate'],decay=hparams['decay'])
+        return keras.optimizers.Adagrad(lr=hparams['learning_rate'],decay=hparams['decay'])
 
 def main():
     my_resnet50 = load_resnet50()
