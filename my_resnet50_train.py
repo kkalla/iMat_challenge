@@ -46,7 +46,8 @@ def _get_optimizer(hparams):
 def main():
     my_resnet50 = load_resnet50()
     train_generator = MyGenerators().get_generator()
-    
+    if not os.path.exists(model_dir):
+        os.mkdir(model_dir)
     checkpoints = os.listdir(model_dir)
     model_path = os.path.join(model_dir,'my_resnet50.h5')
     if os.path.exists(model_path):
