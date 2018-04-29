@@ -34,7 +34,7 @@ def _get_nb_train(train_dir):
     
 nb_images = _get_nb_train(train_dir)
 batch_size = 32
-epochs=1
+epochs=10
 steps_per_epoch= nb_images/batch_size
 num_classes=128
 
@@ -72,6 +72,7 @@ def main():
         my_model = keras.models.load_model(model_path)
     else:
         my_model = load_model()
+    my_model.load_weights(os.path.join(model_dir,'weights.01-4.12.hdf5'))
     my_model.compile(optimizer=hparams['optimizer'],loss=hparams['loss'],metrics=['acc'])
     my_model.summary()
     class LossHistory(keras.callbacks.Callback):
@@ -83,13 +84,13 @@ def main():
     
     history = LossHistory()
     model_checkpointer = ModelCheckpoint(
-            filepath=os.path.join(model_dir,'weights.{epoch:02d}-{loss:.2f}.hdf5'))
+            filepath=os.path.join(model_dir,'weights.{epoch:02d}-{loss:.2f}.hdf5'),period=0.1)
     my_model.fit_generator(generator=train_generator,workers=0,verbose=1,
                            steps_per_epoch=steps_per_epoch,epochs=epochs,
                            callbacks=[history,model_checkpointer])
     print(history.losses)
     print("Saving trained weights and model...")
-    my_model.save()
+    my_model.save(model_path)
     
 if __name__=="__main__":
     main()

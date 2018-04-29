@@ -10,7 +10,7 @@ def move_to_subdir(filename):
     if len(label)==2:
         label = label[1]
     else:
-        return
+        label = 'test'
     target_path = os.path.join(args.select_dir,label)
     if not os.path.exists(target_path):
         os.mkdir(target_path)
