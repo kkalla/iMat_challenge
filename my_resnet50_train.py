@@ -57,7 +57,8 @@ def main():
     optimizer = _get_optimizer(hparams)
     my_resnet50.compile(optimizer=optimizer,loss=hparams['loss'],
                         metrics=hparams['metrics'])
-        
+    my_resnet50.summary()
+    
     class LossHistory(Callback):
         def on_train_begin(self, logs={}):
             self.losses = []
