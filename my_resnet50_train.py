@@ -53,7 +53,7 @@ def main():
         my_resnet50 = keras.models.load_model(model_path)
     elif len(checkpoints) > 0:
         my_resnet50.load_weights(os.path.join(model_dir,checkpoints[-1]))
-        
+
     optimizer = _get_optimizer(hparams)
     my_resnet50.compile(optimizer=optimizer,loss=hparams['loss'],
                         metrics=hparams['metrics'])
@@ -76,3 +76,6 @@ def main():
     print(history.losses)
     print("Saving trained weights and model...")
     my_resnet50.save(model_path)
+
+if __name__=="__main__":
+    main()
