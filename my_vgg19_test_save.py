@@ -35,8 +35,8 @@ def main():
             image_ids.append(file.name.split('.')[0])
     
     #Save results
-    result = pd.DataFrame({'id':image_ids,'predicted':predictions})
-    result.to_csv('my_vgg19_submisssion.csv')
+    #result = pd.DataFrame({'id':image_ids,'predicted':predictions})
+    #result.to_csv('my_vgg19_submisssion.csv')
     print(predictions)
     
 if __name__=="__main__":
