@@ -15,7 +15,7 @@ from keras.callbacks import ModelCheckpoint,Callback
 train_dir = 'data/train_images'
 model_dir = 'keras_model/my_resnet50'
 hparams = {'loss':'categorical_crossentropy',
-           'metrics':['accuracy'],
+           'metrics':['accuracy',keras.metrics.top_k_categorical_accuracy],
            'optimizer':'adagrad',
            'learning_rate':0.001,
            'decay':0.0
