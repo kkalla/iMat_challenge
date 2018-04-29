@@ -10,7 +10,7 @@ from keras.preprocessing.image import ImageDataGenerator
 class MyGenerators:
     def __init__(self,
                  rescale=1./255,
-                 train_data_dir='data/train_iamges',
+                 train_data_dir='data/train_images',
                  eval_data_dir='data/valid_images',
                  test_data_dir='data/test_images',
                  ):
