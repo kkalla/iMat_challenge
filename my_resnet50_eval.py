@@ -35,7 +35,7 @@ def main():
     model_path = os.path.join(model_dir,'my_resnet50.h5')
     my_resnet50 = keras.models.load_model(model_path)
     my_resnet50.summary()
-    eval_generator = MyGenerators().get_generator(batch_size=batch_size,shuffle=False)
+    eval_generator = MyGenerators().get_generator(mode='eval',batch_size=batch_size,shuffle=False)
     eval_result = my_resnet50.evaluate_generator(generator=eval_generator)
     print(eval_result)
     

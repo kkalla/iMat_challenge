@@ -10,7 +10,7 @@ import keras
 
 from utils.generators import MyGenerators
 from common.my_resnet50 import load_resnet50
-from keras.callbacks import ModelCheckpoint,Callback
+from keras.callbacks import ModelCheckpoint,Callback,TensorBoard
 
 train_dir = 'data/train_images'
 model_dir = 'keras_model/my_resnet50'
@@ -35,8 +35,8 @@ def _get_nb_train(train_dir):
     
 nb_images = _get_nb_train(train_dir)
 batch_size = 32
-epochs=1
-steps_per_epoch= nb_images/batch_size
+epochs=50
+steps_per_epoch= 100
 num_classes=128
 
 def _get_optimizer(hparams):
@@ -45,14 +45,15 @@ def _get_optimizer(hparams):
 
 def main():
     my_resnet50 = load_resnet50()
-    train_generator = MyGenerators().get_generator()
+    train_generator = MyGenerators().get_generator(mode='train')
+    valid_generator = MyGenerators().get_generator(mode='eval')
     if not os.path.exists(model_dir):
         os.mkdir(model_dir)
     checkpoints = os.listdir(model_dir)
     model_path = os.path.join(model_dir,'my_resnet50.h5')
     if os.path.exists(model_path):
         my_resnet50 = keras.models.load_model(model_path)
-    elif len(checkpoints) > 0:
+    if len(checkpoints) > 0:
         my_resnet50.load_weights(os.path.join(model_dir,checkpoints[-1]))
 
     optimizer = _get_optimizer(hparams)
@@ -71,9 +72,11 @@ def main():
     model_checkpointer = ModelCheckpoint(
             filepath=os.path.join(model_dir,'weights.{epoch:02d}-{loss:.2f}.hdf5'),
             save_weights_only=True,period=1)
-    my_resnet50.fit_generator(generator=train_generator,workers=0,verbose=1,
+    tensorboard_writer = TensorBoard(log_dir='./logs/my_resnet50',write_images=True,histogram_freq=0)
+
+    my_resnet50.fit_generator(generator=train_generator,workers=10,verbose=1,
                            steps_per_epoch=steps_per_epoch,epochs=epochs,
-                           callbacks=[history,model_checkpointer])
+                           callbacks=[history,model_checkpointer,tensorboard_writer],validation_data=valid_generator)
     print(history.losses)
     print("Saving trained weights and model...")
     my_resnet50.save(model_path)
